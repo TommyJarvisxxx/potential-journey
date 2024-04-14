@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>QUIZ DE INFANTIL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffffff; /* Cor de fundo branca */
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #009688;
+        }
+        figure {
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        img {
+            width: 300px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input[type="radio"] {
+            display: none; /* Oculta os botões de rádio padrão */
+        }
+        label {
+            display: block;
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 20px;
+            color: #555;
+        }
+        label:before {
+            content: '';
+            display: block;
+            width: 25px;
+            height: 25px;
+            border: 2px solid #009688;
+            position: absolute;
+            left: 0;
+            top: 0;
+            border-radius: 50%;
+        }
+        input[type="radio"]:checked + label:before {
+            background: #009688;
+        }
+        label:hover:before {
+            background: #ddd;
+        }
+        button {
+            background-color: #009688;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #00796b;
+        }
+        .hidden {
+            display: none;
+        }
+        .results {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .motivational-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: #009688;
+            margin-top: 50px;
+        }
+        .poem-container {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: left;
+        }
+        #timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #009688;
+            margin-top: 50px;
+        }
+        #lostMessage {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff0000; /* Cor do texto vermelho */
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bem-vindo ao nosso site de QUIZ sobre Arte</h1>
+    <figure>
+        <img src="D:\2 ANO\web\jogo\th.jpg" alt="Imagem de boas-vindas">
+    </figure>
+
+    <button id="startButton" onclick="startQuiz()">Começar a Responder</button>
+    <div id="timer" class="hidden">30:00</div>
+
+    <form id="quizForm" class="hidden">
+        <h2 id="questionTitle"></h2>
+        <div id="optionsContainer">
+            <!-- Opções de resposta serão adicionadas aqui -->
+        </div>
+        <button type="button" id="nextButton" class="hidden" onclick="nextQuestion()">Próxima Pergunta</button>
+        <div id="results" class="hidden">
+            <h2>Resultados:</h2>
+            <div id="correctAnswers"></div>
+            <div id="incorrectAnswers" class="hidden"></div> <!-- Ocultar inicialmente -->
+        </div>
+    </form>
+
+    <div id="lostMessage" class="hidden">Você perdeu!!!</div>
+    <button id="tryAgainButton" class="hidden" onclick="tryAgain()">Tentar Novamente</button>
+
+    <script>
+        var questions = [
+            {
+                question: "1) Quem foi considerado um dos precursores da arte moderna no Brasil?",
+                options: ["Tarsila do Amaral", "Leonardo da Vinci", "Pablo Picasso", "Vincent van Gogh"],
+                correctAnswer: "a",
+                explanation: "Tarsila do Amaral é considerada uma das precursoras da arte moderna no Brasil, com obras como 'Abaporu'."
+            },
+            {
+                question: "2) Qual movimento artístico foi caracterizado pelo uso de cores vibrantes e formas simplificadas?",
+                options: ["Impressionismo", "Cubismo", "Expressionismo", "Fauvismo"],
+                correctAnswer: "d",
+                explanation: "O Fauvismo foi caracterizado pelo uso de cores vibrantes e formas simplificadas para expressar emoções intensas."
+            },
+            {
+                question: "3) Qual artista é conhecido por suas obras que retratam o cotidiano urbano e o movimento das pessoas?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Claude Monet", "Edgar Degas"],
+                correctAnswer: "d",
+                explanation: "Edgar Degas é conhecido por suas obras que retratam o cotidiano urbano e o movimento das pessoas, especialmente em suas pinturas de dançarinas."
+            },
+            {
+                question: "4) Qual foi o principal objetivo do movimento modernista na arte?",
+                options: ["Romper com as tradições e buscar novas formas de expressão", "Preservar as técnicas artísticas clássicas", "Retratar a realidade de forma objetiva", "Celebrar a religião e a mitologia"],
+                correctAnswer: "a",
+                explanation: "O principal objetivo do movimento modernista na arte era romper com as tradições e buscar novas formas de expressão, refletindo as mudanças sociais e culturais do século XX."
+            },
+            {
+                question: "5) Qual movimento artístico foi influenciado pela teoria das cores de Isaac Newton?",
+                options: ["Impressionismo", "Cubismo", "Fauvismo", "Realismo"],
+                correctAnswer: "c",
+                explanation: "O Fauvismo foi influenciado pela teoria das cores de Isaac Newton, usando cores puras e vibrantes de forma não naturalista."
+            },
+            {
+                question: "6) Quem foi o líder do movimento cubista na arte?",
+                options: ["Pablo Picasso", "Vincent van Gogh", "Claude Monet", "Henri Matisse"],
+                correctAnswer: "a",
+                explanation: "Pablo Picasso foi um dos líderes do movimento cubista na arte, juntamente com Georges Braque."
+            },
+            {
+                question: "7) Qual foi uma das características marcantes do impressionismo?",
+                options: ["Pintura ao ar livre e uso de pinceladas soltas", "Uso de formas geométricas e cores vibrantes", "Retratos realistas de figuras históricas", "Temas religiosos e mitológicos"],
+                correctAnswer: "a",
+                explanation: "Uma das características marcantes do impressionismo era a pintura ao ar livre e o uso de pinceladas soltas para capturar a luz e o movimento."
+            },
+            {
+                question: "8) Qual movimento artístico teve grande impacto no desenvolvimento da arte abstrata?",
+                options: ["Expressionismo", "Cubismo", "Futurismo", "Dadaísmo"],
+                correctAnswer: "b",
+                explanation: "O Cubismo teve um grande impacto no desenvolvimento da arte abstrata, desafiando as noções tradicionais de representação visual."
+            },
+            {
+                question: "9) Quem é conhecido por suas obras que retratam a solidão e o sofrimento humano?",
+                options: ["Edvard Munch", "Salvador Dalí", "Georgia O'Keeffe", "René Magritte"],
+                correctAnswer: "a",
+                explanation: "Edvard Munch é conhecido por suas obras que retratam a solidão e o sofrimento humano, como 'O Grito'."
+            },
+            {
+                question: "10) Qual foi o principal tema das pinturas de Salvador Dalí?",
+                options: ["Sonhos e imaginação", "Natureza morta e paisagens", "Retratos de figuras históricas", "Cenas do cotidiano urbano"],
+                correctAnswer: "a",
+                explanation: "O principal tema das pinturas de Salvador Dalí era os sonhos e a imaginação, muitas vezes retratando paisagens surreais e símbolos oníricos."
+            }
+        ];
+
+        var questionIndex = 0;
+        var correctAnswers = 0;
+        var userAnswers = [];
+
+        var questionTitle = document.getElementById("questionTitle");
+        var optionsContainer = document.getElementById("optionsContainer");
+        var nextButton = document.getElementById("nextButton");
+        var resultsDiv = document.getElementById("results");
+        var correctAnswersDiv = document.getElementById("correctAnswers");
+        var incorrectAnswersDiv = document.getElementById("incorrectAnswers");
+        var timer = document.getElementById("timer");
+        var lostMessage = document.getElementById("lostMessage"); // Adicionando referência ao elemento de mensagem de perda
+        var tryAgainButton = document.getElementById("tryAgainButton"); // Adicionando referência ao botão Tentar Novamente
+
+        var startTime, endTime;
+
+        function startQuiz() {
+            document.getElementById("startButton").classList.add("hidden");
+            document.getElementById("timer").classList.remove("hidden");
+            document.getElementById("quizForm").classList.remove("hidden");
+            updateTimer();
+            startTime = new Date();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            var currentQuestion = questions[questionIndex];
+            questionTitle.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = "";
+
+            currentQuestion.options.forEach(function(option, index) {
+                var radioButton = document.createElement("input");
+                radioButton.type = "radio";
+                radioButton.name = "resposta";
+                radioButton.id = "option" + index; // Atribui um ID único para cada botão de opção
+                radioButton.value = String.fromCharCode(97 + index); // Converte 0 para 'a', 1 para 'b', etc.
+                optionsContainer.appendChild(radioButton);
+
+                var label = document.createElement("label");
+                label.setAttribute("for", "option" + index); // Associa o label ao botão de opção correspondente
+                label.textContent = option;
+                optionsContainer.appendChild(label);
+                optionsContainer.appendChild(document.createElement("br"));
+            });
+
+            nextButton.classList.remove("hidden");
+        }
+
+        function nextQuestion() {
+            var respostaSelecionada = document.querySelector('input[name="resposta"]:checked');
+            if (respostaSelecionada) {
+                userAnswers.push(respostaSelecionada.value);
+                questionIndex++;
+                if (questionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    stopTimer();
+                    showResults();
+                }
+            } else {
+                alert("Por favor, selecione uma resposta.");
+            }
+        }
+
+        function updateTimer() {
+            var currentTime = new Date();
+            var elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            var remainingTime = 1800 - elapsedTime; // 30 minutos em segundos
+            if (remainingTime <= 0) {
+                stopTimer();
+                showLostMessage(); // Exibe mensagem de perda quando o tempo se esgota
+            } else {
+                var minutes = Math.floor(remainingTime / 60);
+                var seconds = remainingTime % 60;
+                timer.textContent = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                setTimeout(updateTimer, 1000); // Atualiza o cronômetro a cada segundo
+            }
+        }
+
+        function stopTimer() {
+            timer.classList.add("hidden");
+            endTime = new Date();
+        }
+
+        function showResults() {
+            resultsDiv.classList.remove("hidden");
+
+            var totalTime = Math.floor((endTime - startTime) / 1000);
+            var minutes = Math.floor(totalTime / 60);
+            var seconds = totalTime % 60;
+
+            var message = "Parabéns por ter respondido tudo em " + minutes + " minutos e " + seconds + " segundos.";
+            var congratulatoryMessage = document.createElement("h2");
+            congratulatoryMessage.textContent = message;
+            document.body.appendChild(congratulatoryMessage);
+
+            var correctAnswersHTML = "<h3>Perguntas respondidas corretamente:</h3><ul>";
+            var incorrectAnswersHTML = "<h3>Perguntas respondidas incorretamente:</h3><ul>";
+
+            questions.forEach(function(question, index) {
+                var userAnswer = userAnswers[index];
+                var correctAnswer = question.correctAnswer;
+
+                var li = document.createElement("li");
+                li.textContent = question.question;
+
+                if (userAnswer === correctAnswer) {
+                    li.style.color = "green";
+                    correctAnswersHTML += "<li>" + question.question + ": " + question.options[correctAnswer.charCodeAt(0) - 97] + "</li>";
+                } else {
+                    li.style.color = "red";
+                    incorrectAnswersHTML += "<li>" + question.question + ": Sua resposta foi " + question.options[userAnswer.charCodeAt(0) - 97] + ", a resposta correta é " + question.options[correctAnswer.charCodeAt(0) - 97] + "</li>";
+                }
+            });
+
+            correctAnswersHTML += "</ul>";
+            incorrectAnswersHTML += "</ul>";
+
+            correctAnswersDiv.innerHTML = correctAnswersHTML;
+            if (incorrectAnswersHTML.includes("Sua resposta foi")) {
+                incorrectAnswersDiv.innerHTML = incorrectAnswersHTML; // Exibir apenas se houver respostas incorretas
+                incorrectAnswersDiv.classList.remove("hidden");
+            } else {
+                incorrectAnswersDiv.innerHTML = ""; // Limpar conteúdo se não houver respostas incorretas
+            }
+        }
+
+        function showLostMessage() {
+            lostMessage.classList.remove("hidden"); // Exibe a mensagem de perda
+            tryAgainButton.classList.remove("hidden"); // Exibe o botão Tentar Novamente
+        }
+
+        function tryAgain() {
+            location.reload(); // Recarrega a página para tentar o quiz novamente
+        }
+    </script>
+</body>
+</html>
